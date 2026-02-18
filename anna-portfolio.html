@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anna VK — Data Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --accent1: #00f5a0;
+    --accent2: #00d9f5;
+    --accent3: #f500c8;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent1);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent2);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.15s ease;
+    transform: translate(-12px, -12px);
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.3;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 clamp(24px, 8vw, 120px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,160,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,160,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridMove 20s linear infinite;
+  }
+
+  @keyframes gridMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(60px); }
+  }
+
+  .hero-blob {
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,245,160,0.12) 0%, transparent 70%);
+    top: -100px; right: -150px;
+    border-radius: 50%;
+    animation: blobPulse 6s ease-in-out infinite;
+  }
+  .hero-blob2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(245,0,200,0.08) 0%, transparent 70%);
+    bottom: -80px; left: 10%;
+    border-radius: 50%;
+    animation: blobPulse 8s ease-in-out infinite reverse;
+  }
+
+  @keyframes blobPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+
+  .tag {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--accent1);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.2s forwards;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(52px, 10vw, 130px);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    position: relative;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.35s forwards;
+  }
+
+  .hero h1 .outline {
+    -webkit-text-stroke: 2px var(--accent2);
+    color: transparent;
+  }
+
+  .hero-sub {
+    margin-top: 28px;
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 460px;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.5s forwards;
+  }
+
+  .hero-sub span {
+    color: var(--accent1);
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.65s forwards;
+  }
+
+  .btn {
+    padding: 14px 28px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: var(--accent1);
+    color: #000;
+    font-weight: 700;
+  }
+  .btn-primary:hover {
+    background: var(--accent2);
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--accent3);
+  }
+
+  .btn-outline {
+    border: 1px solid var(--muted);
+    color: var(--text);
+  }
+  .btn-outline:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+    transform: translate(-2px, -2px);
+  }
+
+  /* Scrolling ticker */
+  .ticker {
+    background: var(--accent1);
+    color: #000;
+    padding: 10px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .ticker-inner {
+    display: inline-block;
+    animation: ticker 20s linear infinite;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+  }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: clamp(60px, 10vw, 120px) clamp(24px, 8vw, 120px);
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--accent3);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 5vw, 60px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 48px;
+  }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+  @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; } }
+
+  .about-text p {
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .about-text p strong { color: var(--text); }
+
+  .fun-fact-box {
+    background: var(--surface);
+    border: 1px solid rgba(0,245,160,0.15);
+    border-radius: 4px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .fun-fact-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+  }
+  .fun-fact-box h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: var(--accent1);
+  }
+  .fact {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .fact-icon { font-size: 16px; flex-shrink: 0; }
+
+  /* ── SKILLS ── */
+  .skills-section { background: var(--surface); }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .skill-pill {
+    background: var(--bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 2px;
+    padding: 14px 18px;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-pill::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 2px;
+    width: 0;
+    background: var(--accent1);
+    transition: width 0.3s ease;
+  }
+  .skill-pill:hover::before { width: 100%; }
+  .skill-pill:hover {
+    border-color: rgba(0,245,160,0.3);
+    color: var(--accent1);
+    transform: translateY(-2px);
+  }
+  .skill-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent1);
+    flex-shrink: 0;
+  }
+
+  /* ── PROJECTS ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 768px) { .projects-grid { grid-template-columns: 1fr; } }
+
+  .project-card {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 4px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .project-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,245,160,0.04), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .project-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 rgba(0,245,160,0.2);
+    border-color: rgba(0,245,160,0.3);
+  }
+  .project-card:hover::after { opacity: 1; }
+
+  .project-num {
+    font-size: 11px;
+    color: var(--accent3);
+    letter-spacing: 0.2em;
+    margin-bottom: 16px;
+  }
+  .project-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+  .project-card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .project-tag {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border: 1px solid rgba(0,217,245,0.3);
+    color: var(--accent2);
+    border-radius: 2px;
+  }
+
+  /* ── CREDS ── */
+  .creds-section { background: var(--surface); }
+
+  .creds-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .cred-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 20px 24px;
+    background: var(--bg);
+    border-left: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .cred-row:hover {
+    border-left-color: var(--accent1);
+    padding-left: 32px;
+  }
+  .cred-name {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .cred-issuer {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+  .cred-date {
+    font-size: 11px;
+    color: var(--accent1);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── CONNECT ── */
+  .connect-section {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .connect-section::before {
+    content: 'HI';
+    position: absolute;
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(200px, 30vw, 400px);
+    font-weight: 800;
+    color: rgba(0,245,160,0.03);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    letter-spacing: -0.05em;
+    pointer-events: none;
+  }
+
+  .connect-section p {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.8;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 2px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+  .social-link:hover {
+    color: var(--accent1);
+    border-color: var(--accent1);
+    transform: translateY(-3px);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 24px clamp(24px, 8vw, 120px);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+  footer a { color: var(--accent1); text-decoration: none; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: all 0.6s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Blinking cursor on tagline */
+  .blink {
+    animation: blink 1s step-end infinite;
+    color: var(--accent1);
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-blob"></div>
+  <div class="hero-blob2"></div>
+
+  <div style="position:relative; z-index:2;">
+    <p class="tag">// available for opportunities</p>
+    <h1>
+      Anna<br>
+      <span class="outline">VK</span>
+    </h1>
+    <p class="hero-sub">
+      Hey! I'm a <span>Data Engineer</span> from Hyderabad who turns messy data into clean, 
+      query-able gold. Civil engineer by degree, pipeline builder by choice. 
+      Also ran a café once — yes, really.<span class="blink"> █</span>
+    </p>
+    <div class="hero-ctas">
+      <a href="https://github.com/venkatakrishnasaianna" target="_blank" class="btn btn-primary">→ See my work</a>
+      <a href="mailto:venkatakrishnasaianna@gmail.com" class="btn btn-outline">Say hello</a>
+    </div>
+  </div>
+</section>
+
+<!-- Ticker -->
+<div class="ticker">
+  <span class="ticker-inner">
+    ⚡ PYTHON &nbsp;·&nbsp; PYSPARK &nbsp;·&nbsp; DATABRICKS &nbsp;·&nbsp; SQL &nbsp;·&nbsp; ETL PIPELINES &nbsp;·&nbsp; HADOOP &nbsp;·&nbsp; BRONZE-SILVER-GOLD &nbsp;·&nbsp; AIRFLOW &nbsp;·&nbsp; KAFKA &nbsp;·&nbsp; SHELL SCRIPTING &nbsp;·&nbsp; 
+    ⚡ PYTHON &nbsp;·&nbsp; PYSPARK &nbsp;·&nbsp; DATABRICKS &nbsp;·&nbsp; SQL &nbsp;·&nbsp; ETL PIPELINES &nbsp;·&nbsp; HADOOP &nbsp;·&nbsp; BRONZE-SILVER-GOLD &nbsp;·&nbsp; AIRFLOW &nbsp;·&nbsp; KAFKA &nbsp;·&nbsp; SHELL SCRIPTING &nbsp;·&nbsp;
+  </span>
+</div>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div class="section-label">01 / about</div>
+  <h2>Who's this<br>guy?</h2>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>
+        I'm <strong>Venkata Krishnasai Anna</strong> — a data engineer with an unusual path. 
+        My degree? Civil Engineering from Osmania University. My job? Making data pipelines 
+        that don't fall apart (same energy as structural integrity, honestly).
+      </p>
+      <p>
+        I got hooked on data engineering after realizing I was better at moving bytes than bricks. 
+        Now I build <strong>end-to-end batch ETL pipelines</strong>, clean up messy datasets, 
+        and model data from raw ingestion all the way to <strong>analytics-ready gold layer tables</strong>.
+      </p>
+      <p>
+        When I'm not wrestling with data, I'm writing on Medium, contributing to open source, 
+        or convincing people that a Civil Engineer can absolutely become a Data Engineer. 
+        (Spoiler: yes we can.)
+      </p>
+    </div>
+    <div class="fun-fact-box reveal">
+      <h3>// quick.facts()</h3>
+      <div class="fact">
+        <span class="fact-icon">🏗️</span>
+        <span>Civil Engineer → Data Engineer. The pivot nobody saw coming but totally makes sense.</span>
+      </div>
+      <div class="fact">
+        <span class="fact-icon">☕</span>
+        <span>Actually founded a café. Ran multiple locations. Now I run pipelines instead of coffee runs.</span>
+      </div>
+      <div class="fact">
+        <span class="fact-icon">🎤</span>
+        <span>Was on the TEDxOsmaniaU sponsorship team. Networking? Always.</span>
+      </div>
+      <div class="fact">
+        <span class="fact-icon">📍</span>
+        <span>Based in Hyderabad, Telangana. Open to remote opportunities globally.</span>
+      </div>
+      <div class="fact">
+        <span class="fact-icon">🏆</span>
+        <span>6 IBM-authorized badges earned in 2026. Still going.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SKILLS ── -->
+<section class="skills-section" id="skills">
+  <div class="section-label">02 / skills</div>
+  <h2>What I<br>actually know</h2>
+  <div class="skills-grid reveal">
+    <div class="skill-pill"><span class="skill-dot"></span>Python</div>
+    <div class="skill-pill"><span class="skill-dot"></span>SQL</div>
+    <div class="skill-pill"><span class="skill-dot"></span>PySpark</div>
+    <div class="skill-pill"><span class="skill-dot"></span>Databricks</div>
+    <div class="skill-pill"><span class="skill-dot"></span>Apache Airflow</div>
+    <div class="skill-pill"><span class="skill-dot"></span>Apache Kafka</div>
+    <div class="skill-pill"><span class="skill-dot"></span>Hadoop</div>
+    <div class="skill-pill"><span class="skill-dot"></span>ETL / ELT</div>
+    <div class="skill-pill"><span class="skill-dot"></span>Shell Scripting</div>
+    <div class="skill-pill"><span class="skill-dot"></span>Linux</div>
+    <div class="skill-pill"><span class="skill-dot"></span>MySQL / PostgreSQL</div>
+    <div class="skill-pill"><span class="skill-dot"></span>Git</div>
+    <div class="skill-pill"><span class="skill-dot"></span>Data Pipelines</div>
+    <div class="skill-pill"><span class="skill-dot"></span>Schema Design</div>
+    <div class="skill-pill"><span class="skill-dot"></span>Data Validation</div>
+    <div class="skill-pill"><span class="skill-dot"></span>Batch Processing</div>
+  </div>
+</section>
+
+<!-- ── PROJECTS ── -->
+<section id="projects">
+  <div class="section-label">03 / projects</div>
+  <h2>Stuff I<br>actually built</h2>
+  <div class="projects-grid">
+    <div class="project-card reveal">
+      <div class="project-num">PROJECT_01</div>
+      <h3>Municipal Election Data ETL Pipeline</h3>
+      <p>
+        End-to-end batch ETL pipeline ingesting ward-level election data from semi-structured HTML. 
+        Built Bronze → Silver → Gold layers with deduplication, schema standardization, 
+        null validation, and row-count reconciliation across district, ULB, and ward datasets.
+      </p>
+      <div class="project-tags">
+        <span class="project-tag">PYTHON</span>
+        <span class="project-tag">PYSPARK</span>
+        <span class="project-tag">DATABRICKS</span>
+        <span class="project-tag">ETL</span>
+        <span class="project-tag">MEDALLION ARCH</span>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <div class="project-num">PROJECT_02</div>
+      <h3>Urban Water Management Analytics Pipeline</h3>
+      <p>
+        Batch pipeline processing 20+ years of rainfall and reservoir data. 
+        Modeled Gold layer tables for time-series analysis, seasonal trend comparison, 
+        and flood anomaly identification. Used SQL for infrastructure planning insights.
+      </p>
+      <div class="project-tags">
+        <span class="project-tag">PYTHON</span>
+        <span class="project-tag">SQL</span>
+        <span class="project-tag">PYSPARK</span>
+        <span class="project-tag">TIME-SERIES</span>
+        <span class="project-tag">ANALYTICS</span>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top: 20px; text-align: center;" class="reveal">
+    <a href="https://github.com/venkatakrishnasaianna" target="_blank" class="btn btn-outline">
+      → More on GitHub
+    </a>
+  </div>
+</section>
+
+<!-- ── CREDENTIALS ── -->
+<section class="creds-section" id="credentials">
+  <div class="section-label">04 / credentials</div>
+  <h2>Badges &<br>certifications</h2>
+  <div class="creds-list reveal">
+    <div class="cred-row">
+      <div>
+        <div class="cred-name">Python for Data Science and AI</div>
+        <div class="cred-issuer">COURSERA · AUTHORIZED BY IBM</div>
+      </div>
+      <div class="cred-date">JAN 2026</div>
+    </div>
+    <div class="cred-row">
+      <div>
+        <div class="cred-name">Relational Databases (RDBMS) Essentials</div>
+        <div class="cred-issuer">COURSERA · AUTHORIZED BY IBM</div>
+      </div>
+      <div class="cred-date">JAN 2026</div>
+    </div>
+    <div class="cred-row">
+      <div>
+        <div class="cred-name">Python Project for Data Engineering</div>
+        <div class="cred-issuer">COURSERA · AUTHORIZED BY IBM</div>
+      </div>
+      <div class="cred-date">FEB 2026</div>
+    </div>
+    <div class="cred-row">
+      <div>
+        <div class="cred-name">Data Engineering Essentials</div>
+        <div class="cred-issuer">COURSERA · AUTHORIZED BY IBM</div>
+      </div>
+      <div class="cred-date">FEB 2026</div>
+    </div>
+    <div class="cred-row">
+      <div>
+        <div class="cred-name">ETL and Data Pipelines with Shell, Airflow and Kafka</div>
+        <div class="cred-issuer">COURSERA · AUTHORIZED BY IBM</div>
+      </div>
+      <div class="cred-date">FEB 2026</div>
+    </div>
+    <div class="cred-row">
+      <div>
+        <div class="cred-name">Linux Commands & Shell Scripting Essentials V2</div>
+        <div class="cred-issuer">COURSERA · AUTHORIZED BY IBM</div>
+      </div>
+      <div class="cred-date">FEB 2026</div>
+    </div>
+  </div>
+  <div style="margin-top: 20px;" class="reveal">
+    <a href="https://www.credly.com/users/venkata-krishnasai-anna" target="_blank" class="btn btn-outline">
+      → View all on Credly
+    </a>
+  </div>
+</section>
+
+<!-- ── CONNECT ── -->
+<section class="connect-section" id="contact">
+  <div class="section-label" style="justify-content: center; display: flex;">05 / connect</div>
+  <h2 style="margin-bottom: 16px;" class="reveal">Let's build<br>something cool</h2>
+  <p class="reveal">
+    Whether you've got data that needs wrangling, a pipeline that needs building, 
+    or you just want to talk shop — I'm always down. 
+    Also accepting coffee recommendations for Hyderabad.
+  </p>
+  <div class="reveal">
+    <a href="mailto:venkatakrishnasaianna@gmail.com" class="btn btn-primary" style="display: inline-flex;">
+      → venkatakrishnasaianna@gmail.com
+    </a>
+  </div>
+  <div class="social-links reveal">
+    <a href="https://www.linkedin.com/feed/" target="_blank" class="social-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+      LinkedIn
+    </a>
+    <a href="https://github.com/venkatakrishnasaianna" target="_blank" class="social-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      GitHub
+    </a>
+    <a href="https://medium.com/@venkatakrishnasaianna" target="_blank" class="social-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>
+      Medium
+    </a>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Venkata Krishnasai Anna</span>
+  <span>Built with chaos &amp; curiosity in <a href="#">Hyderabad</a></span>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.style.left = mouseX - 6 + 'px';
+    cursor.style.top = mouseY - 6 + 'px';
+  });
+
+  function animateRing() {
+    ringX += (mouseX - ringX - 18) * 0.12;
+    ringY += (mouseY - ringY - 18) * 0.12;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.style.transform = 'scale(2.5)');
+    el.addEventListener('mouseleave', () => cursor.style.transform = 'scale(1)');
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
